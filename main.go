@@ -42,7 +42,12 @@ var target *string
 
 func main(){
 
-	filePath := flag.String("path", "C:\\Dev\\Go\\src\\github.com\\rydavidson\\AZMigrate\\agencies.yaml", "Path to the agencies.yml file")
+	wd, err := os.Getwd()
+	if err != nil {
+		log.Fatalf("Unable to get working directory #%v",err)
+	}
+
+	filePath := flag.String("path", wd + "\\agencies.yml", "Path to the agencies.yml file")
 	spc := flag.String("agency", "", "Agency to move from current host to target")
 	target := flag.String("target", "", "Target hostid to move the agency to")
 	flag.Parse()
