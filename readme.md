@@ -24,7 +24,7 @@ The following environment variables need to be set:
 > azmigrate.exe
 
 - Migrate agencies defined in agencies.yml to a specific host
-> azmnigrate.exe -target "d6e733d3-634c-4f75-8193-4b8b68c28292"
+> azmigrate.exe -target "d6e733d3-634c-4f75-8193-4b8b68c28292"
 
 - Migrate specific agencies to Azure-MT-Host
 > azmigrate.exe -agency CRC10,CRC9
