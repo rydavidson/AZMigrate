@@ -1,0 +1,23 @@
+agencies:
+- agency_name: CRC10
+  database_fqdn: "{{ agency_name }}.{{ env_name }}.db.us.accela.com"
+  agency_db: "{{ tns_name }}"
+  agency_db_servicename: "{{ agency_name }}"
+  agency_pass: "admin"
+  agency_db_username: "{{ agency_name }}"
+  agency_db_password: 44RIPfvJn6w@ezk
+  agency_adhoc_username: "{{ agency_name }}_adhoc"
+  agency_adhoc_password: k7rcDlZ6?x!wX1N
+  agency_report_username: "{{ agency_name }}_report"
+  agency_report_password: Eg51V271Cf!d?l6
+- agency_name: CRC9
+  database_fqdn: "{{ agency_name }}.{{ env_name }}.db.us.accela.com"
+  agency_db: "{{ tns_name }}"
+  agency_db_servicename: "{{ agency_name }}"
+  agency_pass: "admin"
+  agency_db_username: "{{ agency_name }}"
+  agency_db_password: 2S1B80?4$IeN2ob
+  agency_adhoc_username: "{{ agency_name }}_adhoc"
+  agency_adhoc_password: 87EXC2dq2la@DT1
+  agency_report_username: "{{ agency_name }}_report"
+  agency_report_password: 12xE90Zw8@sqV!H
