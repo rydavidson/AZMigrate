@@ -39,6 +39,9 @@ type agencyConf struct {
 var filePath *string
 var spc *string
 var target *string
+var enable *bool
+var disable *bool
+var set_enabled *bool  // start as nil
 
 func main() {
 
@@ -50,37 +53,53 @@ func main() {
 	filePath := flag.String("path", wd+"\\agencies.yml", "Path to the agencies.yml file")
 	spc := flag.String("agency", "", "Agency to move from current host to target")
 	target := flag.String("target", "", "Target hostid to move the agency to")
+	enable := flag.Bool("enable", false, "flag to enable")
+	disable := flag.Bool("disable", false, "flag to disable")
+	
 	flag.Parse()
 
 	var aConf agencyConf
 
 	var wg sync.WaitGroup
 
-	if *target == "" && *spc == "" {
-		aConf.readAgencies(*filePath)
-		// Get the values from the agencies collection
-		for _, v0 := range aConf.Agencies {
-			// Get the elements in each agency entry
-			for k1, v1 := range v0 {
-				// Check if the element is the agency_name and process if so, ignore the rest
-				//TODO Unmarshal the yml so agency_name can be checked directly
-				if k1 == "agency_name" {
-					log.Printf("Prcessing agency %v", v1)
-					agencyData := agencyResponseData{}
-					wg.Add(1)
-					go updateAgency(v1, &agencyData, &wg)
+	if enable && disable {
+		log.Println("can't ask to both enable and disable")
+	}
+	else {
+		if enable {
+			set_enabled = true
+		}
+		if disable {
+			set_enabled = false
+		}
+
+		if *target == "" && *spc == "" {
+			aConf.readAgencies(*filePath)
+			// Get the values from the agencies collection
+			for _, v0 := range aConf.Agencies {
+				// Get the elements in each agency entry
+				for k1, v1 := range v0 {
+					// Check if the element is the agency_name and process if so, ignore the rest
+					//TODO Unmarshal the yml so agency_name can be checked directly
+					if k1 == "agency_name" {
+						log.Printf("Prcessing agency %v", v1)
+						agencyData := agencyResponseData{}
+						wg.Add(1)
+						go updateAgency(v1, set_enabled, &agencyData, &wg)
+					}
 				}
 			}
+		} else {
+			log.Println("target and agency flags aren't implemented yet, sorry")
 		}
-	} else {
-		log.Println("target and agency flags aren't implemented yet, sorry")
 	}
+
 	//TODO Add logic for target and agency flags
 	wg.Wait()
 	log.Print("Done processing all agencies")
 }
 
-func updateAgency(a string, targetRes *agencyResponseData, wg *sync.WaitGroup) {
+func updateAgency(a string, enableddisabled *bool, targetRes *agencyResponseData, wg *sync.WaitGroup) {
 
 	defer wg.Done()
 	//TODO Make this global
@@ -98,6 +117,17 @@ func updateAgency(a string, targetRes *agencyResponseData, wg *sync.WaitGroup) {
 
 	json.NewDecoder(res.Body).Decode(targetRes)
 	agencyData := targetRes.Result
+
+	//TODO more logic to handle different use-cases - here, either enable/disable or re-home
+	if enableddisabled != nil {
+		agencyData.Enabled = enableddisabled
+	}
+	else {
+		agencyData.DatabaseType = 2
+		//TODO Accept as an arg instead of hardcoded
+		agencyData.HostId = "52f80df3-26db-462a-8c4c-125fdb29ce97"
+	}
+
 	agencyData.updateForAzureMT()
 }
 
@@ -105,9 +135,7 @@ func updateAgency(a string, targetRes *agencyResponseData, wg *sync.WaitGroup) {
 func (agencyData *agency) updateForAzureMT() {
 	//TODO Make this global
 	subsystemAccessKey := os.Getenv("CONSTRUCT_ACCESS_KEY")
-	agencyData.DatabaseType = 2
-	//TODO Accept as an arg instead of hardcoded
-	agencyData.HostId = "52f80df3-26db-462a-8c4c-125fdb29ce97"
+
 	url := "https://admin.accela.com/apis/v4/agencies/" + agencyData.Id
 	client := &http.Client{}
 	body, jsonErr := json.Marshal(agencyData)
