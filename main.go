@@ -41,7 +41,7 @@ var spc *string
 var target *string
 var enable *bool
 var disable *bool
-var set_enabled *bool  // start as nil
+var set_enabled int  // default is 0
 
 func main() {
 
@@ -62,15 +62,14 @@ func main() {
 
 	var wg sync.WaitGroup
 
-	if enable && disable {
+	if *enable && *disable {
 		log.Println("can't ask to both enable and disable")
-	}
-	else {
-		if enable {
-			set_enabled = true
+	} else {
+		if *enable {
+			set_enabled = 2
 		}
-		if disable {
-			set_enabled = false
+		if *disable {
+			set_enabled = 1
 		}
 
 		if *target == "" && *spc == "" {
@@ -99,7 +98,7 @@ func main() {
 	log.Print("Done processing all agencies")
 }
 
-func updateAgency(a string, enableddisabled *bool, targetRes *agencyResponseData, wg *sync.WaitGroup) {
+func updateAgency(a string, enabledflag int, targetRes *agencyResponseData, wg *sync.WaitGroup) {
 
 	defer wg.Done()
 	//TODO Make this global
@@ -119,10 +118,10 @@ func updateAgency(a string, enableddisabled *bool, targetRes *agencyResponseData
 	agencyData := targetRes.Result
 
 	//TODO more logic to handle different use-cases - here, either enable/disable or re-home
-	if enableddisabled != nil {
-		agencyData.Enabled = enableddisabled
-	}
-	else {
+	if enabledflag > 0 {
+		//agencyData.Enabled = enabledflag - 1
+		agencyData.Enabled = !((enabledflag- 1) == 0)
+	} else {
 		agencyData.DatabaseType = 2
 		//TODO Accept as an arg instead of hardcoded
 		agencyData.HostId = "52f80df3-26db-462a-8c4c-125fdb29ce97"
