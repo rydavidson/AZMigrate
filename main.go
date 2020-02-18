@@ -121,10 +121,12 @@ func updateAgency(a string, enabledflag int, targetRes *agencyResponseData, wg *
 	if enabledflag > 0 {
 		//agencyData.Enabled = enabledflag - 1
 		agencyData.Enabled = !((enabledflag- 1) == 0)
+		log.Printf("setting enabled flag to: %v", agencyData.Enabled)
 	} else {
 		agencyData.DatabaseType = 2
 		//TODO Accept as an arg instead of hardcoded
 		agencyData.HostId = "52f80df3-26db-462a-8c4c-125fdb29ce97"
+		log.Printf("changing to SQLServer and Azure-MT-Host")
 	}
 
 	agencyData.updateForAzureMT()
