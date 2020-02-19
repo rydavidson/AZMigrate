@@ -41,7 +41,7 @@ var spc *string
 var target *string
 var enable *bool
 var disable *bool
-var set_enabled int  // default is 0
+var setEnabled int // default is 0
 
 func main() {
 
@@ -55,7 +55,7 @@ func main() {
 	target := flag.String("target", "", "Target hostid to move the agency to")
 	enable := flag.Bool("enable", false, "flag to enable")
 	disable := flag.Bool("disable", false, "flag to disable")
-	
+
 	flag.Parse()
 
 	var aConf agencyConf
@@ -66,10 +66,10 @@ func main() {
 		log.Println("can't ask to both enable and disable")
 	} else {
 		if *enable {
-			set_enabled = 2
+			setEnabled = 2
 		}
 		if *disable {
-			set_enabled = 1
+			setEnabled = 1
 		}
 
 		if *target == "" && *spc == "" {
@@ -84,7 +84,7 @@ func main() {
 						log.Printf("Prcessing agency %v", v1)
 						agencyData := agencyResponseData{}
 						wg.Add(1)
-						go updateAgency(v1, set_enabled, &agencyData, &wg)
+						go updateAgency(v1, setEnabled, &agencyData, &wg)
 					}
 				}
 			}
@@ -120,7 +120,7 @@ func updateAgency(a string, enabledflag int, targetRes *agencyResponseData, wg *
 	//TODO more logic to handle different use-cases - here, either enable/disable or re-home
 	if enabledflag > 0 {
 		//agencyData.Enabled = enabledflag - 1
-		agencyData.Enabled = !((enabledflag- 1) == 0)
+		agencyData.Enabled = !((enabledflag - 1) == 0)
 		log.Printf("setting enabled flag to: %v", agencyData.Enabled)
 	} else {
 		agencyData.DatabaseType = 2
