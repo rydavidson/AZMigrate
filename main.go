@@ -28,7 +28,7 @@ type agency struct {
 	IsForDemo           bool
 	State               string
 	Country             string
-	IsDefaultAppActive  bool
+	DefaultAppActive    bool
 	DatabaseType        int
 }
 
